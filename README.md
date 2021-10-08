@@ -1,1 +1,5 @@
-# simple-poker-js
+# Vernett Interview
+
+## SQL
+
+## Poker application

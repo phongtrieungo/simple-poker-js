@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Poker Game</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <section class="main">
+        <section class="container">
+            <header>Poker game</header>
+
+            <div class="d-flex">
+                <button class="button primary d-flex flex-align-center" id="create-deck-btn">
+                    <span>create deck</span>
+                </button>
+                <button class="button primary d-flex flex-align-center" id="reset-deck-btn">
+                    <span>reset game</span>
+                </button>
+            </div>
+            <p id="number-of-available-cards"></p>
+            <div id="deck-of-cards" class="card">
+            </div>
+            <button class="button primary d-flex flex-align-center" id="draw-card-btn">
+                <span>draw cards</span>
+            </button>
+            <section class="d-flex" id="drawn-cards">
+
+            </section>
+        </section>
+    </section>
+    <script src="index.js" async defer></script>
+</body>
+
+</html>
