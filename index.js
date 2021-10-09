@@ -5,19 +5,73 @@ const drawCardButton = document.getElementById("draw-card-btn");
 const numberOfAvailableCards = document.getElementById(
     "number-of-available-cards"
 );
-const deckOfCards = document.getElementById("deck-of-cards");
 const drawnCards = document.getElementById("drawn-cards");
+const rankValue = document.getElementById('rank-value');
 
 // Variables
 let cardsOnHand = [];
 const delay = 500;
+const cardValues = {
+    "Ace of Hearts": 1,
+    "2 of Hearts": 2,
+    "3 of Hearts": 3,
+    "4 of Hearts": 4,
+    "5 of Hearts": 5,
+    "6 of Hearts": 6,
+    "7 of Hearts": 7,
+    "8 of Hearts": 8,
+    "9 of Hearts": 9,
+    "10 of Hearts": 10,
+    "Jack of Hearts": 11,
+    "Queen of Hearts": 12,
+    "King of Hearts": 13,
+    "Ace of Diamonds": 1,
+    "2 of Diamonds": 2,
+    "3 of Diamonds": 3,
+    "4 of Diamonds": 4,
+    "5 of Diamonds": 5,
+    "6 of Diamonds": 6,
+    "7 of Diamonds": 7,
+    "8 of Diamonds": 8,
+    "9 of Diamonds": 9,
+    "10 of Diamonds": 10,
+    "Jack of Diamonds": 11,
+    "Queen of Diamonds": 12,
+    "King of Diamonds": 13,
+    "Ace of Clubs": 1,
+    "2 of Clubs": 2,
+    "3 of Clubs": 3,
+    "4 of Clubs": 4,
+    "5 of Clubs": 5,
+    "6 of Clubs": 6,
+    "7 of Clubs": 7,
+    "8 of Clubs": 8,
+    "9 of Clubs": 9,
+    "10 of Clubs": 10,
+    "Jack of Clubs": 11,
+    "Queen of Clubs": 12,
+    "King of Clubs": 13,
+    "Ace of Spades": 1,
+    "2 of Spades": 2,
+    "3 of Spades": 3,
+    "4 of Spades": 4,
+    "5 of Spades": 5,
+    "6 of Spades": 6,
+    "7 of Spades": 7,
+    "8 of Spades": 8,
+    "9 of Spades": 9,
+    "10 of Spades": 10,
+    "Jack of Spades": 11,
+    "Queen of Spades": 12,
+    "King of Spades": 13,
+};
 
 // Classes
 class Deck {
     constructor() {
         this.deck = [];
         this.reset();
-        // this.shuffle();
+        this.shuffle();
         this.count = 0;
         this.numberOfAllowedDrawCards = 5;
     }
@@ -46,13 +100,13 @@ class Deck {
     }
 
     drawCards() {
-        const lastChildren = [];
+        const drawnCards = [];
         const stopCondition = this.count + this.numberOfAllowedDrawCards > this.deck.length ? this.length() : this.count + this.numberOfAllowedDrawCards;
         for (let index = this.count; index < stopCondition; index++, this.count++) {
-            lastChildren.push(this.deck[index]);
+            drawnCards.push(this.deck[index]);
         }
 
-        return lastChildren;
+        return drawnCards;
     }
 
     length() {
@@ -67,61 +121,6 @@ class Deck {
 class Card {
     constructor(card) {
         this.card = card;
-        const cardValues = {
-            "Ace of Hearts": 1,
-            "2 of Hearts": 2,
-            "3 of Hearts": 3,
-            "4 of Hearts": 4,
-            "5 of Hearts": 5,
-            "6 of Hearts": 6,
-            "7 of Hearts": 7,
-            "8 of Hearts": 8,
-            "9 of Hearts": 9,
-            "10 of Hearts": 10,
-            "Jack of Hearts": 11,
-            "Queen of Hearts": 12,
-            "King of Hearts": 13,
-            "Ace of Diamonds": 1,
-            "2 of Diamonds": 2,
-            "3 of Diamonds": 3,
-            "4 of Diamonds": 4,
-            "5 of Diamonds": 5,
-            "6 of Diamonds": 6,
-            "7 of Diamonds": 7,
-            "8 of Diamonds": 8,
-            "9 of Diamonds": 9,
-            "10 of Diamonds": 10,
-            "Jack of Diamonds": 11,
-            "Queen of Diamonds": 12,
-            "King of Diamonds": 13,
-            "Ace of Clubs": 1,
-            "2 of Clubs": 2,
-            "3 of Clubs": 3,
-            "4 of Clubs": 4,
-            "5 of Clubs": 5,
-            "6 of Clubs": 6,
-            "7 of Clubs": 7,
-            "8 of Clubs": 8,
-            "9 of Clubs": 9,
-            "10 of Clubs": 10,
-            "Jack of Clubs": 11,
-            "Queen of Clubs": 12,
-            "King of Clubs": 13,
-            "Ace of Spades": 1,
-            "2 of Spades": 2,
-            "3 of Spades": 3,
-            "4 of Spades": 4,
-            "5 of Spades": 5,
-            "6 of Spades": 6,
-            "7 of Spades": 7,
-            "8 of Spades": 8,
-            "9 of Spades": 9,
-            "10 of Spades": 10,
-            "Jack of Spades": 11,
-            "Queen of Spades": 12,
-            "King of Spades": 13,
-        };
-
         this.value = cardValues[card];
         this.suit = card.substring(card.indexOf(" of ") + 4);
         this.placeHolder = null;
@@ -176,6 +175,11 @@ const removeLoader = (loader) => {
 };
 
 createDeckButton.addEventListener("click", () => {
+    rankValue.innerHTML = '';
+    while (drawnCards.firstChild) {
+        drawnCards.removeChild(drawnCards.lastChild);
+    }
+    hideDeck();
     const loader = createLoader();
 
     createDeckButton.appendChild(loader);
@@ -185,10 +189,12 @@ createDeckButton.addEventListener("click", () => {
         removeLoader(loader);
         showDeck();
         numberOfAvailableCards.innerHTML = `${deck.length()} cards`;
+        drawCardButton.disabled = false;
     }, delay);
 });
 
 resetDeckButton.addEventListener("click", () => {
+    rankValue.innerHTML = '';
     while (drawnCards.firstChild) {
         drawnCards.removeChild(drawnCards.lastChild);
     }
@@ -235,22 +241,19 @@ drawCardButton.addEventListener("click", () => {
             drawCardButton.disabled = true;
         }
 
-        calculateHandRanking(cardDetails);
+        const result = calculateHandRanking(cardDetails);
+        rankValue.innerHTML = result;
     }, delay);
 });
 
 const showDeck = () => {
-    if (deck && deckOfCards) {
-        deckOfCards.classList.remove("hide");
+    if (deck) {
         drawCardButton.classList.remove("hide");
     }
 };
 
 const hideDeck = () => {
-    if (deckOfCards) {
-        deckOfCards.classList.add("hide");
-        drawCardButton.classList.add("hide");
-    }
+    drawCardButton.classList.add("hide");
 };
 
 const createCard = (c) => {
@@ -263,10 +266,48 @@ const createCard = (c) => {
     return card;
 };
 
-const calculateHandRanking = (cards) => {
+function evaluateSameSuit(calculatedCards) {
+    let result = '';
+    const sorted = calculatedCards.sort((pre, cur) => pre.value - cur.value).map(s => s.value);
+    let isStraightFlush = true;
+    let start = 0;
+
+    for (let i = 0; i < sorted.length; i++) {
+        const element = sorted[i];
+
+        if (i === 0) {
+            start = element;
+            continue;
+        }
+
+        isStraightFlush = isStraightFlush && start + 1 === element;
+        start = element;
+
+    }
+
+    if (isStraightFlush) {
+        if (sorted[0] === 10 && sorted[sorted.length - 1] === 14) {
+            result = 'Royal flush';
+        } else {
+            result = 'Straight flush';
+        }
+    } else {
+        result = 'Flush';
+    }
+    return result;
+}
+
+function calculateHandRanking(cards) {
+    let result = 'HighCards';
+    if (cards.length < 5) {
+        return result;
+    }
+
     const calculatedCards = [...cards].map(selectedCard => ({ suit: selectedCard.suit, value: selectedCard.value === 1 ? 14 : selectedCard.value }));
 
     const groupBySuit = new Map();
+
+    const groupByValue = new Map();
 
     calculatedCards.forEach(card => {
         if (groupBySuit.has(card.suit)) {
@@ -275,47 +316,93 @@ const calculateHandRanking = (cards) => {
         } else {
             groupBySuit.set(card.suit, card.value);
         }
+
+        if (groupByValue.has(card.value)) {
+            const currentVal = groupByValue.get(card.value);
+            groupByValue.set(card.value, `${currentVal} ${card.suit}`);
+        } else {
+            groupByValue.set(card.value, card.suit);
+        }
     })
 
-    console.log({ groupBySuit });
-
     if (groupBySuit.size === 1) {
+        result = evaluateSameSuit(calculatedCards);
+        return result;
+    }
 
-        const sorted = calculatedCards.sort((pre, cur) => pre.value - cur.value).map(s => s.value);
-        let isStraightFlush = true;
-        let start = 0;
+    if (groupByValue.size === 2) {
+        const groupValues = groupByValue.values();
+        const groupOne = groupValues.next().value;
+        const groupTwo = groupValues.next().value;
 
-        for (let i = 0; i < sorted.length; i++) {
-            const element = sorted[i];
+        const groupOneValues = groupOne.split(' ');
+        const groupTwoValues = groupTwo.split(' ');
 
-            if (i === 0) {
-                start = element;
-                continue;
-            }
-
-            isStraightFlush = start + 1 === element;
-            start = element;
-
-        }
-
-        if (isStraightFlush) {
-            if (sorted[0] === 10 && sorted[sorted.length - 1] === 14) {
-                return console.log('Royal flush Straight');
-            }
-            return console.log('Straight flush');
+        if (groupOneValues.length === 4 || groupTwoValues.length === 4) {
+            result = 'Four of a kind';
         } else {
-            return console.log('Flush');
+            result = 'Full House';
         }
+        return result;
     }
 
-    if (groupBySuit.size === 4) {
+    if (groupByValue.size === 3) {
+        const groupValues = groupByValue.values();
+        const groupOne = groupValues.next().value;
+        const groupTwo = groupValues.next().value;
+        const groupThree = groupValues.next().value;
 
-    } else if (groupBySuit.size === 3) {
+        const groupOneValues = groupOne.split(' ');
+        const groupTwoValues = groupTwo.split(' ');
+        const groupThreeValues = groupThree.split(' ');
 
-    } else if (groupBySuit.size === 2) {
-        console.log('Full house');
-        console.log('Four of a kind');
+        if (groupOneValues.length === 3 || groupTwoValues.length === 3 || groupThreeValues.length === 3) {
+            result = 'Three of a kind';
+        } else if (
+            (groupOneValues.length = 2 && groupTwoValues.length === 2) ||
+            (groupOneValues.length = 2 && groupThreeValues.length === 2) ||
+            (groupTwoValues.length = 2 && groupThreeValues.length === 2)
+        ) {
+            result = 'Two Pair';
+        }
+        return result;
     }
+
+    if (groupByValue.size === 4) {
+        const groupValues = groupByValue.values();
+        const groupOne = groupValues.next().value;
+        const groupTwo = groupValues.next().value;
+        const groupThree = groupValues.next().value;
+        const groupFour = groupValues.next().value;
+
+        const groupOneValues = groupOne.split(' ');
+        const groupTwoValues = groupTwo.split(' ');
+        const groupThreeValues = groupThree.split(' ');
+        const groupFourValues = groupFour.split(' ');
+
+        if (groupOneValues.length === 2 || groupTwoValues.length === 2 || groupThreeValues.length === 2 || groupFourValues.length === 2) {
+            result = 'Pair';
+        }
+        return result;
+    }
+
+    const sorted = calculatedCards.sort((pre, cur) => pre.value - cur.value).map(s => s.value);
+    let isStraight = true;
+    let start = 0;
+
+    for (let i = 0; i < sorted.length; i++) {
+        const element = sorted[i];
+
+        if (i === 0) {
+            start = element;
+            continue;
+        }
+
+        isStraight = isStraight && start + 1 === element;
+        start = element;
+    }
+
+    return isStraight ? 'Straight' : 'HighCards';
 }
 
 setup();

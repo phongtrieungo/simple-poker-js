@@ -105,6 +105,11 @@ header {
     display: none;
 }
 
+.rank-result {
+    margin: 20px 0;
+    text-transform: uppercase;
+    font-size: 2rem;
+}
 
 /* Loading indicator */
 
