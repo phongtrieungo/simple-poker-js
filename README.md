@@ -1,4 +1,4 @@
-# Vernett Interview
+# Versett Interview
 
 ## SQL
 
