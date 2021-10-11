@@ -109,7 +109,9 @@ header {
     margin: 20px 0;
     text-transform: uppercase;
     font-size: 2rem;
+    color: var(--primary);
 }
+
 
 /* Loading indicator */
 

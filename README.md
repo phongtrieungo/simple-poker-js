@@ -15,23 +15,18 @@ CREATE TABLE `versett`.`likes_table` ( `tree_id` INT NOT NULL , `user_id` INT NO
 
 ### Queries
 
-1. SELECT tree_table.friendly_name, tree_table.scientific_name 
+The query satisfies all following requirements
+1. The query return all trees that belong to the user with the email address “adam@versett.com”
+2. The query returns the following information for each tree: the ID, friendly name, scientific name, the owner’s name.
+3. The query also returns the total number of “likes” for each tree.
+
+```
+SELECT tree_table.id as "ID", tree_table.friendly_name as "Friendly Name", tree_table.scientific_name as "Scientific Name", user_table.name as "Owner's Name", likes.like_count as "Total Likes" 
     FROM user_table 
     INNER JOIN tree_table ON user_table.id = tree_table.owner_id 
-    WHERE user_table.email LIKE "adam@versett.com"
-
-2. SELECT tree_table.id, tree_table.friendly_name, tree_table.scientific_name, user_table.name 
-    FROM user_table 
-    INNER JOIN tree_table 
-    ON user_table.id = tree_table.owner_id
-
-3. select result.friendly_name, COUNT(result.friendly_name) from (select tree_table.id, tree_table.friendly_name, user_table.name 
-        from tree_table 
-        inner join likes_table on tree_table.id = likes_table.tree_id 
-        inner join user_table on user_table.id = likes_table.user_id 
-        ORDER BY tree_table.id
-        ) as result GROUP BY result.friendly_name
-
+    INNER JOIN (SELECT likes_table.tree_id, COUNT(likes_table.tree_id) as like_count FROM likes_table GROUP BY likes_table.tree_id) as likes ON likes.tree_id = tree_table.id
+    WHERE user_table.email LIKE "adam@versett.com";
+```
 ## Poker application
 
 ### Description

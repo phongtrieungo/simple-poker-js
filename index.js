@@ -66,6 +66,17 @@ const cardValues = {
     "King of Spades": 13,
 };
 
+const royalFlush = 'Royal flush';
+const highCards = 'HighCards';
+const straightFlush = 'Straight flush';
+const flush = 'Flush';
+const fourOfAKind = 'Four of a kind';
+const threeOfAKind = 'Three of a kind';
+const fullHouse = 'Full House';
+const straight = 'Straight';
+const twoPair = 'Two Pair';
+const pair = 'Pair';
+
 // Classes
 class Deck {
     constructor() {
@@ -266,126 +277,7 @@ const createCard = (c) => {
     return card;
 };
 
-function evaluateSameSuit(calculatedCards) {
-    let result = '';
-    const sorted = calculatedCards.sort((pre, cur) => pre.value - cur.value).map(s => s.value);
-    let isStraightFlush = true;
-    let start = 0;
-
-    for (let i = 0; i < sorted.length; i++) {
-        const element = sorted[i];
-
-        if (i === 0) {
-            start = element;
-            continue;
-        }
-
-        isStraightFlush = isStraightFlush && start + 1 === element;
-        start = element;
-
-    }
-
-    if (isStraightFlush) {
-        if (sorted[0] === 10 && sorted[sorted.length - 1] === 14) {
-            result = 'Royal flush';
-        } else {
-            result = 'Straight flush';
-        }
-    } else {
-        result = 'Flush';
-    }
-    return result;
-}
-
-function calculateHandRanking(cards) {
-    let result = 'HighCards';
-    if (cards.length < 5) {
-        return result;
-    }
-
-    const calculatedCards = [...cards].map(selectedCard => ({ suit: selectedCard.suit, value: selectedCard.value === 1 ? 14 : selectedCard.value }));
-
-    const groupBySuit = new Map();
-
-    const groupByValue = new Map();
-
-    calculatedCards.forEach(card => {
-        if (groupBySuit.has(card.suit)) {
-            const currentVal = groupBySuit.get(card.suit);
-            groupBySuit.set(card.suit, `${currentVal} ${card.value}`);
-        } else {
-            groupBySuit.set(card.suit, card.value);
-        }
-
-        if (groupByValue.has(card.value)) {
-            const currentVal = groupByValue.get(card.value);
-            groupByValue.set(card.value, `${currentVal} ${card.suit}`);
-        } else {
-            groupByValue.set(card.value, card.suit);
-        }
-    })
-
-    if (groupBySuit.size === 1) {
-        result = evaluateSameSuit(calculatedCards);
-        return result;
-    }
-
-    if (groupByValue.size === 2) {
-        const groupValues = groupByValue.values();
-        const groupOne = groupValues.next().value;
-        const groupTwo = groupValues.next().value;
-
-        const groupOneValues = groupOne.split(' ');
-        const groupTwoValues = groupTwo.split(' ');
-
-        if (groupOneValues.length === 4 || groupTwoValues.length === 4) {
-            result = 'Four of a kind';
-        } else {
-            result = 'Full House';
-        }
-        return result;
-    }
-
-    if (groupByValue.size === 3) {
-        const groupValues = groupByValue.values();
-        const groupOne = groupValues.next().value;
-        const groupTwo = groupValues.next().value;
-        const groupThree = groupValues.next().value;
-
-        const groupOneValues = groupOne.split(' ');
-        const groupTwoValues = groupTwo.split(' ');
-        const groupThreeValues = groupThree.split(' ');
-
-        if (groupOneValues.length === 3 || groupTwoValues.length === 3 || groupThreeValues.length === 3) {
-            result = 'Three of a kind';
-        } else if (
-            (groupOneValues.length = 2 && groupTwoValues.length === 2) ||
-            (groupOneValues.length = 2 && groupThreeValues.length === 2) ||
-            (groupTwoValues.length = 2 && groupThreeValues.length === 2)
-        ) {
-            result = 'Two Pair';
-        }
-        return result;
-    }
-
-    if (groupByValue.size === 4) {
-        const groupValues = groupByValue.values();
-        const groupOne = groupValues.next().value;
-        const groupTwo = groupValues.next().value;
-        const groupThree = groupValues.next().value;
-        const groupFour = groupValues.next().value;
-
-        const groupOneValues = groupOne.split(' ');
-        const groupTwoValues = groupTwo.split(' ');
-        const groupThreeValues = groupThree.split(' ');
-        const groupFourValues = groupFour.split(' ');
-
-        if (groupOneValues.length === 2 || groupTwoValues.length === 2 || groupThreeValues.length === 2 || groupFourValues.length === 2) {
-            result = 'Pair';
-        }
-        return result;
-    }
-
+function checkStraight(calculatedCards) {
     const sorted = calculatedCards.sort((pre, cur) => pre.value - cur.value).map(s => s.value);
     let isStraight = true;
     let start = 0;
@@ -402,7 +294,135 @@ function calculateHandRanking(cards) {
         start = element;
     }
 
-    return isStraight ? 'Straight' : 'HighCards';
+    return { isStraight, sorted };
+}
+
+function evaluateSameSuit(calculatedCards) {
+    let result = '';
+    const { isStraight, sorted } = checkStraight(calculatedCards);
+
+    if (isStraight) {
+        if (sorted[0] === 10 && sorted[sorted.length - 1] === 14) {
+            result = royalFlush;
+        } else {
+            result = straightFlush;
+        }
+    } else {
+        result = flush;
+    }
+    return result;
+}
+
+function evaluateSameValue(groupByValue) {
+    const groupValues = groupByValue.values();
+    const groupOne = groupValues.next().value;
+    const groupTwo = groupValues.next().value;
+
+    const groupOneValues = groupOne.split(' ');
+    const groupTwoValues = groupTwo.split(' ');
+
+    if (groupOneValues.length === 4 || groupTwoValues.length === 4) {
+        return fourOfAKind;
+    } else {
+        return fullHouse;
+    }
+}
+
+function evaluateStraightOrHighcards(calculatedCards) {
+    const { isStraight } = checkStraight(calculatedCards);
+    return isStraight ? straight : highCards;
+}
+
+function groupBy(calculatedCards) {
+    const groupBySuit = new Map();
+
+    const groupByValue = new Map();
+
+    calculatedCards.forEach(card => {
+        const currentSuit = groupBySuit.get(card.suit);
+        const currentVal = groupByValue.get(card.value);
+
+        if (groupBySuit.has(card.suit)) {
+            groupBySuit.set(card.suit, `${currentSuit} ${card.value}`);
+        } else {
+            groupBySuit.set(card.suit, card.value);
+        }
+
+        if (groupByValue.has(card.value)) {
+            groupByValue.set(card.value, `${currentVal} ${card.suit}`);
+        } else {
+            groupByValue.set(card.value, card.suit);
+        }
+    })
+
+    return { groupBySuit, groupByValue };
+}
+
+function evaluateThreeKindOrTwoPair(groupByValue) {
+    const groupValues = groupByValue.values();
+    const groupOne = groupValues.next().value;
+    const groupTwo = groupValues.next().value;
+    const groupThree = groupValues.next().value;
+
+    const groupOneValues = groupOne.split(' ');
+    const groupTwoValues = groupTwo.split(' ');
+    const groupThreeValues = groupThree.split(' ');
+
+    if (groupOneValues.length === 3 || groupTwoValues.length === 3 || groupThreeValues.length === 3) {
+        return threeOfAKind;
+    } else if (
+        (groupOneValues.length = 2 && groupTwoValues.length === 2) ||
+        (groupOneValues.length = 2 && groupThreeValues.length === 2) ||
+        (groupTwoValues.length = 2 && groupThreeValues.length === 2)
+    ) {
+        return twoPair;
+    }
+}
+
+function evaluateAPair(groupByValue) {
+    const groupValues = groupByValue.values();
+    const groupOne = groupValues.next().value;
+    const groupTwo = groupValues.next().value;
+    const groupThree = groupValues.next().value;
+    const groupFour = groupValues.next().value;
+
+    const groupOneValues = groupOne.split(' ');
+    const groupTwoValues = groupTwo.split(' ');
+    const groupThreeValues = groupThree.split(' ');
+    const groupFourValues = groupFour.split(' ');
+
+    if (groupOneValues.length === 2 || groupTwoValues.length === 2 || groupThreeValues.length === 2 || groupFourValues.length === 2) {
+        return pair;
+    }
+    return ''
+}
+
+function calculateHandRanking(cards) {
+    if (cards.length < 5) {
+        return highCards;
+    }
+
+    const calculatedCards = [...cards].map(selectedCard => ({ suit: selectedCard.suit, value: selectedCard.value === 1 ? 14 : selectedCard.value }));
+
+    const { groupBySuit, groupByValue } = groupBy(calculatedCards);
+
+    if (groupBySuit.size === 1) {
+        return evaluateSameSuit(calculatedCards);
+    }
+
+    if (groupByValue.size === 2) {
+        return evaluateSameValue(groupByValue);
+    }
+
+    if (groupByValue.size === 3) {
+        return evaluateThreeKindOrTwoPair(groupByValue);
+    }
+
+    if (groupByValue.size === 4) {
+        return evaluateAPair(groupByValue);
+    }
+
+    return evaluateStraightOrHighcards(calculatedCards);
 }
 
 setup();
