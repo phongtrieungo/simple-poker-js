@@ -29,6 +29,14 @@ SELECT tree_table.id as "ID", tree_table.friendly_name as "Friendly Name", tree_
 ```
 ## Poker application
 
+### Run application
+
+1. Download the project
+
+2. Run `index.html` file to start the application
+
+For running the unit test, please run the file `spec-runner.html`
+
 ### Description
 The small application will have a simple UI
 
