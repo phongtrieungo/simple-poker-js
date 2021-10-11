@@ -42,5 +42,5 @@ There are two labels
 2. Another will show the ranking value for each draw
 
 `Unit test` will be the file `spec-runner.html` to display the report following the test cases defined in file `index.spec.js`.
-The reason of UT will provide test case for all available ranking values, which cannot take time to test on the UI. You just need to open the
+The reason of UT will provide test case for all available ranking values, which take time to test on the UI. You just need to open the
 HTML file and the UT will be run
